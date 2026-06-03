@@ -1,17 +1,32 @@
-const SCROLLY_KEYWORDS = [
-  "hallucinated citations",
-  "Mata sanctions",
-  "shadow ChatGPT",
-  "Harvey pilot",
-  "verify everything",
-  "no firm policy",
-  "billable hours",
-  "black box",
-  "eDiscovery TAR",
-  "client confidentiality",
-  "partner skepticism",
-  "fake cases",
+/** Subreddits for the scroll ticker — corpus sources plus related legal-AI communities. */
+const MARQUEE_SUBREDDITS = [
+  "r/lawyers",
+  "r/LegalTech",
+  "r/LawFirm",
+  "r/ChatGPT",
+  "r/lawyertalk",
+  "r/paralegal",
+  "r/BigLaw",
+  "r/LawSchool",
+  "r/smalllaw",
+  "r/legaltech",
 ];
+
+function formatSubreddit(name) {
+  const raw = String(name || "").trim();
+  if (!raw) return "";
+  return raw.startsWith("r/") ? raw : `r/${raw}`;
+}
+
+function subredditsForMarquee() {
+  const fromData = window.showcaseData?.allItems;
+  if (fromData?.length) {
+    const corpus = [...new Set(fromData.map((row) => formatSubreddit(row.subreddit)).filter(Boolean))];
+    const extra = MARQUEE_SUBREDDITS.filter((sub) => !corpus.includes(sub));
+    return [...corpus, ...extra];
+  }
+  return MARQUEE_SUBREDDITS;
+}
 
 function prefersReducedMotion() {
   return window.matchMedia("(prefers-reduced-motion: reduce)").matches;
@@ -90,8 +105,9 @@ function initMarquee() {
   const track = document.querySelector(".scrolly-marquee__track");
   if (!track || prefersReducedMotion()) return;
 
-  const items = [...SCROLLY_KEYWORDS, ...SCROLLY_KEYWORDS];
-  track.innerHTML = items.map((word) => `<span>${word}</span>`).join("");
+  const subs = subredditsForMarquee();
+  const items = [...subs, ...subs];
+  track.innerHTML = items.map((sub) => `<span>${sub}</span>`).join("");
 }
 
 function initReveal() {
