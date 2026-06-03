@@ -8,6 +8,7 @@
   --charcoal: #24211e;
   --oxblood: #7c2f2b;
   --blueprint: #28485f;
+  --navy: #243f54;
   --gold: #c28f37;
   --green: #4b7657;
   --shadow: 0 24px 70px rgba(31, 25, 18, 0.18);
@@ -1187,10 +1188,15 @@ body.modal-open {
   cursor: pointer;
 }
 
+.preview-pill {
+  color: var(--ink);
+  font-weight: 600;
+}
+
 .preview-pill.is-active {
   border-color: var(--navy);
   background: var(--navy);
-  color: #fff;
+  color: #fffaf1;
 }
 
 .preview-excerpt-grid {
@@ -1314,19 +1320,33 @@ body.modal-open {
 }
 
 .explorer-tab {
-  border: 1px solid var(--line);
-  background: #fff;
+  border: 1px solid var(--line-strong);
+  background: var(--paper-strong);
+  color: var(--ink);
   padding: 8px 16px;
   font: inherit;
   font-size: 0.88rem;
-  font-weight: 600;
+  font-weight: 700;
   cursor: pointer;
+  transition: background 140ms ease, border-color 140ms ease, color 140ms ease;
 }
 
-.explorer-tab.is-active {
+.explorer-tab:hover {
+  border-color: var(--blueprint);
+  color: var(--blueprint);
+  background: #fff;
+}
+
+.explorer-tab.is-active,
+.explorer-tab.is-active:hover {
   background: var(--navy);
   border-color: var(--navy);
-  color: #fff;
+  color: #fffaf1;
+}
+
+.explorer-tab:focus-visible {
+  outline: 2px solid var(--gold);
+  outline-offset: 2px;
 }
 
 .explorer-panel {
