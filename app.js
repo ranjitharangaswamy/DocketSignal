@@ -1,4 +1,4 @@
-const themes = [
+const SAMPLE_THEMES = [
   {
     id: "accuracy_trust",
     name: "Accuracy, trust, and verification",
@@ -231,10 +231,67 @@ const themes = [
   }
 ];
 
+function formatFrameLabel(value) {
+  if (!value || value === "none" || value === "unframed") return "unframed";
+  return String(value).replace(/_/g, "-");
+}
+
+function hydrateThemesFromShowcase(fallbackThemes) {
+  const data = window.showcaseData;
+  if (!data?.themeSummary?.length) return [...fallbackThemes];
+
+  const excerptByTheme = {};
+  for (const row of data.excerpts || []) {
+    if (!excerptByTheme[row.theme]) excerptByTheme[row.theme] = [];
+    excerptByTheme[row.theme].push(row);
+  }
+
+  const fallbackById = Object.fromEntries(fallbackThemes.map((theme) => [theme.id, theme]));
+
+  return [...data.themeSummary]
+    .sort((a, b) => b.count - a.count)
+    .map((row) => {
+      const existing = fallbackById[row.theme];
+      const exRows = (excerptByTheme[row.theme] || []).sort((a, b) => a.rank - b.rank);
+      return {
+        id: row.theme,
+        name: row.theme_label || row.theme,
+        count: row.count,
+        percentage: row.percentage,
+        meanScore: row.mean_reddit_score ?? 0,
+        frame: formatFrameLabel(row.top_frame),
+        statement:
+          existing?.statement ||
+          `${row.theme_label} appears in ${row.count} coded items (${row.percentage}% of corpus).`,
+        memo:
+          existing?.memo ||
+          `Sentiment split: ${row.sentiment_positive_pct ?? 0}% positive, ${row.sentiment_negative_pct ?? 0}% negative. Dominant emotion: ${row.top_emotion || "none"}. Subreddits: ${row.top_subreddits || "—"}.`,
+        implication:
+          existing?.implication ||
+          "Treat frequency as a prioritization signal; validate themes with constant comparison.",
+        excerpts: exRows.length
+          ? exRows.map((ex) => ({
+              text: ex.excerpt,
+              subreddit: ex.subreddit
+                ? `r/${String(ex.subreddit).replace(/^r\//, "")}`
+                : "r/unknown",
+              score: ex.score ?? 0,
+              url: ex.source_url,
+              source_url: ex.source_url,
+              source_link_label: ex.source_link_label,
+              source_link_type: ex.source_link_type,
+            }))
+          : existing?.excerpts || [],
+      };
+    });
+}
+
+const themes = hydrateThemesFromShowcase(SAMPLE_THEMES);
+
 const corpusStats = {
-  codedItems: 25,
-  sourceTypes: 1,
-  themes: themes.length
+  codedItems: window.showcaseData?.stats?.totalItems ?? 25,
+  sourceTypes: window.showcaseData?.stats?.uniqueSubreddits ?? 1,
+  themes: themes.length,
 };
 
 const themeList = document.querySelector("#theme-list");
@@ -273,34 +330,24 @@ function applyProvenance(provenance) {
   if (provenance.theme_count) {
     document.querySelector("#stat-themes").textContent = provenance.theme_count;
   }
+
+  const methodsNote = document.querySelector("#detail-methods-provenance");
+  if (methodsNote) {
+    if (provenance.mode === "live_reddit_api") {
+      methodsNote.textContent =
+        "Corpus: live Reddit API collection. Scores reflect current Reddit upvotes at collection time; theme coding still requires researcher validation.";
+    } else if (provenance.mode === "sample_corpus") {
+      methodsNote.textContent =
+        "Corpus: curated sample (not live scrapes). Reddit scores are illustrative engagement values from the sample corpus; rerun with --live-reddit for live upvotes.";
+    } else {
+      methodsNote.textContent = provenance.detail || methodsNote.textContent;
+    }
+  }
 }
 
 if (window.corpusProvenance) {
   applyProvenance(window.corpusProvenance);
 }
-
-/** Sync resolved Reddit URLs from pipeline output into dashboard excerpts. */
-function mergeExcerptLinksFromShowcase() {
-  const rows = window.showcaseData?.excerpts;
-  if (!rows?.length) return;
-
-  themes.forEach((theme) => {
-    const byTheme = rows
-      .filter((row) => row.theme === theme.id)
-      .sort((a, b) => a.rank - b.rank);
-
-    theme.excerpts.forEach((excerpt, index) => {
-      const row = byTheme[index];
-      if (!row) return;
-      excerpt.url = row.source_url;
-      excerpt.source_url = row.source_url;
-      excerpt.source_link_label = row.source_link_label;
-      excerpt.source_link_type = row.source_link_type;
-    });
-  });
-}
-
-mergeExcerptLinksFromShowcase();
 
 function renderThemeList(selectedId) {
   themeList.innerHTML = themes.map((theme, index) => `

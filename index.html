@@ -212,9 +212,35 @@
                 <h2 id="detail-title">Accuracy, trust, and verification anxiety</h2>
                 <p id="detail-statement"></p>
               </div>
-              <div class="share-badge">
-                <strong id="detail-percent"></strong>
-                <span>of corpus</span>
+              <div class="detail-head__meta">
+                <div class="share-badge">
+                  <strong id="detail-percent"></strong>
+                  <span>of corpus</span>
+                </div>
+                <details class="detail-methods" id="detail-methods">
+                  <summary>How are these scores calculated?</summary>
+                  <div class="detail-methods__body">
+                    <dl>
+                      <div>
+                        <dt>% of corpus</dt>
+                        <dd>Share of coded rows assigned to this theme: <em>theme count ÷ total corpus rows × 100</em> (see <code>build_theme_summary</code> in the pipeline).</dd>
+                      </div>
+                      <div>
+                        <dt>Coded items</dt>
+                        <dd>Posts and comments tagged with this theme via keyword rules, with TF-IDF cluster fallback for uncoded rows.</dd>
+                      </div>
+                      <div>
+                        <dt>Mean Reddit score</dt>
+                        <dd>Arithmetic mean of each row’s Reddit <strong>upvote score</strong> in this theme—not sentiment, not a composite index. Excerpt cards show the same per-post score.</dd>
+                      </div>
+                      <div>
+                        <dt>Dominant frame</dt>
+                        <dd>Most frequent rhetorical frame label in the theme subset (e.g. verification-first, organizational-barriers).</dd>
+                      </div>
+                    </dl>
+                    <p class="detail-methods__note" id="detail-methods-provenance">Corpus: sample showcase data unless you run the pipeline with live Reddit API credentials.</p>
+                  </div>
+                </details>
               </div>
             </div>
 
