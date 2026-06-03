@@ -1,0 +1,92 @@
+You are working on HCDE 530 Mini Project 2: a research-track computational tool for legal-tech market and user-voice analysis.
+
+## Project intent
+
+- **Problem:** Legal-tech researchers manually scan forums and the open web for recurring complaints and adoption signals about legal AI/tools; this project automates collection and Charmaz-style qualitative synthesis.
+- **Primary user:** The student as a legal-tech / HCD researcher.
+- **Beneficiaries:** UX researchers and product managers at legal-tech companies who need theme-level market insight (not raw scrapes).
+- **Track:** Research — insights and structured findings are the product, not a polished consumer UI.
+- **Platform:** Cursor + Python. Main deliverable is a **GitHub-published Jupyter notebook** plus **CSV** artifacts. A lightweight local UI (e.g. Dash) is optional later, not required for MP2 core.
+
+## Analytic framework (Kathy Charmaz, Constructing Grounded Theory)
+
+- Use **constructivist grounded theory**, not pre-baked topic labels forced onto data.
+- Workflow in the notebook (document each phase in markdown):
+  1. **Open coding** — initial codes grounded in line-level excerpts; memo surprises and comparisons.
+  2. **Focused coding** — merge/split codes into fewer, higher-order categories.
+  3. **Theoretical coding** — relate categories; name **themes** with definitions and boundaries.
+  4. **Constant comparison** — revisit earlier rows when new codes appear; note saturation limits honestly.
+- Every theme claim must trace to **source id → excerpt → code → category → theme** in CSV or memo tables.
+- AI may **suggest** codes or draft memos; the researcher **validates** final codebook and themes (state this in prose).
+
+## Data sources (v1 scope)
+
+**In scope for first working pipeline:**
+- **Reddit** via official API (e.g. PRAW) — legal-tech-related subreddits; store post/comment text, author handle (if public), timestamp, url, subreddit, score.
+- **Other public text** when legally and technically feasible, with provenance columns:
+  - Company blogs (e.g. Harvey product/engineering posts) — RSS or polite HTTP fetch of public HTML; no paywall bypass.
+  - **Public** LinkedIn posts/articles (URLs the user supplies or documented public pages only; no login automation).
+  - Open-source **README** / docs with cited metrics or user-research claims — fetch raw markdown from public repos.
+
+**Out of scope unless explicitly requested:**
+- Scraping behind logins, bypassing paywalls, or violating site ToS.
+- Facebook or other sources that require authenticated scraping.
+- Storing unnecessary PII; prefer ids and public handles; document redaction rules in `mp2.md`.
+
+## Repository layout (mirror Mini Project 1 discipline)
+
+```
+MiniProject2/
+  Miniproject2.ipynb      # narrative + analysis (run top to bottom)
+  data/
+    raw/                  # immutable pulls (timestamped filenames)
+    processed/            # cleaned, coded CSVs
+  src/                    # optional: scrape.py, codebook.py, clean.py
+  mp2.md                  # glossary, methods, limitations, competency claims
+  requirements.txt
+  README.md
+  .cursorrules
+```
+
+- Kernel cwd must be **MiniProject2/**.
+- Prefer **one analytical question per major notebook section**, like MP1.
+- Regenerate derived CSVs from notebook or `src/` scripts; do not hand-edit `data/raw/`.
+
+## CSV conventions
+
+Minimum columns for text rows: `source`, `source_type`, `collected_at`, `url`, `title`, `body_text`, `author` (nullable), `metadata` (JSON string for extras).
+
+Coding outputs should include: `row_id`, `excerpt`, `open_code`, `focused_code`, `category`, `theme`, `memo`, `coder` (e.g. human / ai_suggested).
+
+Document schema in `mp2.md` when columns change.
+
+## Python stack and style
+
+- Python 3.10+, **pandas** for tables; **jupyter** notebook as source of truth.
+- Add dependencies only when needed (`praw`, `requests`, `beautifulsoup4`, etc.); pin in `requirements.txt`.
+- Keep functions small and named for pipeline steps: `fetch_*`, `clean_*`, `code_*`, `summarize_*`.
+- Type hints and short docstrings on new functions in `src/`.
+- Follow PEP 8; smallest change that satisfies the request.
+
+## Secrets and ethics
+
+- **Never** commit API keys, `.env`, or tokens. Use environment variables; document setup in README.
+- Log **rate limits**, robots.txt respect, and **what was not collected** (limitations section).
+- Quote lengths: short excerpts in reports; link to source url.
+
+## Visualization
+
+- Thematic insights are primary; charts are **optional** follow-ons (bar of code frequency, timeline of volume).
+- If plotting, reuse MP1 patterns: labeled axes, plain-English titles that state the finding.
+
+## Communication with the researcher
+
+- Be concise; cite file paths changed.
+- When ambiguous, ask one focused question (e.g. subreddit list, date range) rather than guessing scope.
+- Flag when a source is likely ToS-sensitive; propose Reddit-first fallback.
+
+## Edits and verification
+
+- Do not rename `MiniProject2/` deliverable files without being asked.
+- After pipeline changes, describe how to verify: run notebook section, row counts, sample quotes per theme.
+- Run relevant checks when available; otherwise give a 3-step manual verification plan.
