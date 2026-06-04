@@ -13,11 +13,12 @@
     <header class="hero">
       <div class="hero__image" aria-hidden="true"></div>
       <nav class="topbar" aria-label="Project navigation">
-        <a class="brand-link" href="../README.md">DocketSignal</a>
+        <a class="brand-link" href="README.md">DocketSignal</a>
         <a href="#story">Story</a>
         <a href="#themes">Themes</a>
         <a href="#discourse-explorer">Explorer</a>
         <a href="#evidence">Evidence</a>
+        <a href="design.html" class="topbar__design-card">Design thinking</a>
         <a href="#explore">Explore data</a>
       </nav>
       <section class="hero__content">
@@ -43,33 +44,53 @@
     <section class="scrolly-story" id="story" aria-label="Scroll narrative">
       <div class="scrolly-story__inner">
         <article class="scrolly-step scrolly-reveal">
-          <p class="scrolly-kicker">Legal AI discourse · Context</p>
-          <h2 class="scrolly-headline">We only look<br><em>at the edges.</em></h2>
-          <p class="scrolly-body">Public conversation about legal AI often starts with catastrophe: a Mata sanction, a fabricated citation, a headline about lawyers disciplined for chatbot drafts. Those events command attention. They are not where most practitioners live day to day.</p>
-          <blockquote class="scrolly-pullquote">The real story is quieter.</blockquote>
-          <p class="scrolly-body">Shadow tool use, partner skepticism, verification rituals, billable-hour friction. The profession is built to respond when something goes wrong — far less equipped to see the ongoing pressure in forum threads and comment chains.</p>
+          <p class="scrolly-kicker">Legal AI discourse · Research question</p>
+          <h2 class="scrolly-headline">What do practitioners argue about most when legal AI comes up in public forums?</h2>
+          <p class="scrolly-body">This showcase codes public Reddit threads with keyword themes and sentiment. It does not settle the debates, but it ranks where practitioners spend their argumentative energy when firms are not in the room.</p>
+          <figure class="scrolly-evidence-quote reddit-quote">
+            <p class="reddit-quote__title">Lawyer here — stop using ChatGPT for case citations</p>
+            <blockquote class="reddit-quote__body">
+              <p>Every week someone posts about getting burned by fake cases. LLMs are probabilistic text generators not legal databases. Use purpose-built legal research tools or you are asking for sanctions. Human verification is mandatory.</p>
+            </blockquote>
+            <figcaption class="reddit-quote__meta">
+              <span>r/ChatGPT</span>
+              <span>892 pts</span>
+              <span>u/ethics_nerd</span>
+            </figcaption>
+          </figure>
         </article>
 
         <article class="scrolly-step scrolly-step--dark scrolly-reveal">
-          <p class="scrolly-kicker">Legal AI discourse · The corpus</p>
-          <h2 class="scrolly-headline">Even highly regulated work<br><em>relies on informal talk.</em></h2>
-          <p class="scrolly-body">Court rules, ethics opinions, and vendor demos describe a controlled future. From the outside, adoption can look inevitable. But public Reddit discourse reveals practitioners negotiating risk in public — often without naming their firm or client.</p>
+          <p class="scrolly-kicker">Short answer from this corpus</p>
+          <h2 class="scrolly-headline">Verification and trust<br><em>outrank everything else.</em></h2>
+          <p class="scrolly-body">In a 25-row Reddit sample, accuracy and verification anxiety is the top coded theme. The arguments repeat: fabricated citations, post-Mata caution, and speed that still demands a human sign-off.</p>
           <ul class="scrolly-wordlist">
-            <li>verification anxiety</li>
-            <li>shadow adoption</li>
+            <li>accuracy & trust</li>
+            <li>tool comparison</li>
+            <li>adoption resistance</li>
             <li>ethics & confidentiality</li>
-            <li>workflow speed</li>
-            <li>job role change</li>
-            <li>vendor comparison</li>
+            <li>efficiency gains</li>
+            <li>job displacement</li>
           </ul>
+          <figure class="scrolly-evidence-quote scrolly-evidence-quote--dark reddit-quote">
+            <p class="reddit-quote__title reddit-quote__title--label">Illustrative comment · r/lawyers</p>
+            <blockquote class="reddit-quote__body">
+              <p>We piloted Harvey for contract review. Accuracy is better than generic chatbots but I still catch wrong clause summaries weekly. The value is speed on first pass, not final judgment. You must validate everything before it goes to a client.</p>
+            </blockquote>
+            <figcaption class="reddit-quote__meta">
+              <span>r/lawyers</span>
+              <span>156 pts</span>
+              <span>u/biglaw_associate</span>
+            </figcaption>
+          </figure>
         </article>
 
         <div class="scrolly-pair scrolly-reveal">
           <div class="scrolly-pair__sticky">
-            <p class="scrolly-kicker">01 / 03 — Top theme</p>
-            <h2 class="scrolly-headline scrolly-headline--compact">Trust is the<br><em>gate.</em></h2>
-            <p class="scrolly-body">In this sample corpus, accuracy and verification anxiety outrank every other coded theme — the through-line after Mata-style failures.</p>
-            <p class="scrolly-meta">Frequency-ranked keyword coding · Reddit-only · researcher validation required</p>
+            <p class="scrolly-kicker">Finding 01 / 03 · Top theme</p>
+            <h2 class="scrolly-headline scrolly-headline--compact">Which argument<br><em>shows up most?</em></h2>
+            <p class="scrolly-body">Accuracy, trust, and verification (hallucination fear, citation checks, and mandatory human review) leads the frequency ranking in this sample.</p>
+            <p class="scrolly-meta">Keyword coding · Reddit-only · researcher validation required</p>
           </div>
           <div class="scrolly-pair__panels">
             <article class="scrolly-stat-card">
@@ -84,9 +105,9 @@
 
         <div class="scrolly-pair scrolly-reveal">
           <div class="scrolly-pair__sticky">
-            <p class="scrolly-kicker">02 / 03 — Sentiment</p>
-            <h2 class="scrolly-headline scrolly-headline--compact">Tone is mixed,<br><em>not naive.</em></h2>
-            <p class="scrolly-body">VADER polarity on cleaned text surfaces optimism about workflow gains alongside warnings about hallucination and governance — rarely pure hype.</p>
+            <p class="scrolly-kicker">Finding 02 / 03 · Sentiment</p>
+            <h2 class="scrolly-headline scrolly-headline--compact">Are they hopeful<br><em>or skeptical?</em></h2>
+            <p class="scrolly-body">Both. VADER polarity on cleaned text surfaces workflow optimism alongside hallucination warnings. Practitioners argue in mixed tone, not pure hype or uniform panic.</p>
           </div>
           <div class="scrolly-pair__panels">
             <article class="scrolly-stat-card">
@@ -98,56 +119,73 @@
                 <span class="neu" style="width:32%"></span>
                 <span class="neg" style="width:20%"></span>
               </div>
-              <p class="scrolly-stat-card__note">Illustrative split from current pipeline run — open Sentiment tab for full breakdown.</p>
+              <p class="scrolly-stat-card__note">Illustrative split from current pipeline run. Open the Sentiment tab for full breakdown.</p>
             </article>
           </div>
         </div>
 
         <div class="scrolly-pair scrolly-reveal">
           <div class="scrolly-pair__sticky">
-            <p class="scrolly-kicker">03 / 03 — Coverage</p>
-            <h2 class="scrolly-headline scrolly-headline--compact">Eight themes,<br><em>one source.</em></h2>
-            <p class="scrolly-body">This pass stays deliberately narrow: public Reddit threads only, so frequency signals show where practitioners argue — not what firms do in private.</p>
+            <p class="scrolly-kicker">Finding 03 / 03 · Coverage</p>
+            <h2 class="scrolly-headline scrolly-headline--compact">How many distinct<br><em>debates appear?</em></h2>
+            <p class="scrolly-body">Eight keyword themes from one public source type. The map is intentionally narrow (Reddit only), so frequency shows where practitioners argue in the open, not what firms decide behind closed doors.</p>
           </div>
           <div class="scrolly-pair__panels">
             <article class="scrolly-stat-card">
               <p class="scrolly-stat-card__index">03 / 03</p>
               <p class="scrolly-stat-card__value"><span data-count-to="8" data-scrolly="data-themes">8</span></p>
               <p class="scrolly-stat-card__label">themes surfaced from <span data-count-to="25" data-scrolly="data-items">25</span> coded items</p>
-              <p class="scrolly-stat-card__note">Subreddits: r/lawyers, r/LawFirm, r/LegalTech, r/ChatGPT — see provenance banner below for sample vs live API.</p>
+              <p class="scrolly-stat-card__note">Subreddits: r/lawyers, r/LawFirm, r/LegalTech, r/ChatGPT. See the provenance banner below for sample vs live API.</p>
             </article>
           </div>
         </div>
 
         <article class="scrolly-step scrolly-reveal">
-          <p class="scrolly-kicker">Legal AI discourse · Adoption</p>
-          <h2 class="scrolly-headline">The tools exist.<br><em>So why the silence?</em></h2>
-          <p class="scrolly-body">Associates describe using ChatGPT quietly while partners delay policy. Ethics threads stress confidentiality; tool threads compare Harvey, CoCounsel, and Spellbook. Structurally, options are multiplying — yet discourse keeps returning to verification and fear of professional consequence.</p>
-          <blockquote class="scrolly-pullquote scrolly-pullquote--wide">“You must validate everything before it goes to a client.” — recurring practitioner frame in corpus excerpts</blockquote>
-          <p class="scrolly-body">Psychological barriers show up as often as feature lists: black-box anxiety, billable-hour incentives, and missing firm governance. People turn to anonymous forums — not because they are better, but because they feel safer.</p>
-        </article>
+          <p class="scrolly-kicker">Illustrative threads · From the corpus</p>
+          <h2 class="scrolly-headline">What else do they<br><em>argue about?</em></h2>
+          <p class="scrolly-body">After verification, practitioners split across vendor choice, firm politics, ethics walls, and workflow speed. These excerpts are representative, not exhaustive, of the coded sample.</p>
 
-        <article class="scrolly-step scrolly-step--split scrolly-reveal">
-          <p class="scrolly-kicker">Legal AI discourse · Two paths</p>
-          <h2 class="scrolly-headline">When discourse names risk,<br><em>design can respond.</em></h2>
-          <div class="scrolly-paths">
-            <div class="scrolly-path">
-              <p class="scrolly-path__label">Path 01 · Lower the verification barrier</p>
-              <p class="scrolly-path__stat" data-scrolly="path-accuracy-pct">20%</p>
-              <p class="scrolly-path__text">Threads obsess over citation integrity. Interfaces that surface linked authorities, confidence states, and explicit cannot-verify flags match what practitioners already demand.</p>
-            </div>
-            <div class="scrolly-path">
-              <p class="scrolly-path__label">Path 02 · Governed adoption</p>
-              <p class="scrolly-path__stat" data-scrolly="path-adoption-pct">16%</p>
-              <p class="scrolly-path__text">Resistance and firm-culture themes cluster around policy vacuums. Products need ethical-wall compatibility, transparent reasoning paths, and language firms can adopt without shadow use.</p>
-            </div>
-          </div>
+          <figure class="scrolly-evidence-quote reddit-quote">
+            <p class="reddit-quote__title">Anyone actually trusting ChatGPT for research after Mata?</p>
+            <blockquote class="reddit-quote__body">
+              <p>I'm a solo and tried ChatGPT for a motion outline. It cited cases that looked real but were completely fabricated. After Mata I feel like I need to verify every sentence. Curious what others use that is actually grounded in real citations.</p>
+            </blockquote>
+            <figcaption class="reddit-quote__meta">
+              <span>r/lawyers</span>
+              <span>412 pts</span>
+              <span>u/solo_litigator</span>
+            </figcaption>
+          </figure>
+
+          <figure class="scrolly-evidence-quote reddit-quote">
+            <p class="reddit-quote__title">Partners still refuse to adopt any AI tools</p>
+            <blockquote class="reddit-quote__body">
+              <p>I'm at a 40 attorney firm. Younger associates use ChatGPT quietly. Partners say malpractice risk and client confidentiality. We have no firm AI policy. Perfect is the enemy of good but nobody wants to be the test case.</p>
+            </blockquote>
+            <figcaption class="reddit-quote__meta">
+              <span>r/LawFirm</span>
+              <span>234 pts</span>
+              <span>u/associate_year3</span>
+            </figcaption>
+          </figure>
+
+          <figure class="scrolly-evidence-quote reddit-quote">
+            <p class="reddit-quote__title">Harvey vs CoCounsel for mid-size litigation shop?</p>
+            <blockquote class="reddit-quote__body">
+              <p>Managing partner wants us to pick one AI stack this quarter. Harvey demo was impressive but pricing is opaque. CoCounsel integrates with Westlaw which our associates already live in. Worried about subscription creep when you add research plus AI tiers.</p>
+            </blockquote>
+            <figcaption class="reddit-quote__meta">
+              <span>r/LegalTech</span>
+              <span>98 pts</span>
+              <span>u/lit_support_lead</span>
+            </figcaption>
+          </figure>
         </article>
 
         <article class="scrolly-step scrolly-step--closing scrolly-reveal">
-          <p class="scrolly-kicker">Legal AI discourse · Looking forward</p>
-          <h2 class="scrolly-headline">The pipeline surfaces patterns.<br><em>You still validate them.</em></h2>
-          <p class="scrolly-body">DocketSignal ranks where to look first in public legal-AI talk. It does not automate grounded theory, saturation, or causal claims. The sections below let you inspect themes, sentiment, and raw rows — the way a researcher would.</p>
+          <p class="scrolly-kicker">Legal AI discourse · Next step</p>
+          <h2 class="scrolly-headline">The pipeline ranks the arguments.<br><em>You still read the threads.</em></h2>
+          <p class="scrolly-body">DocketSignal surfaces where public legal-AI talk concentrates: themes, sentiment, and verbatim excerpts. It does not replace researcher judgment. Use the sections below to inspect the full coded corpus.</p>
           <nav class="scrolly-cta" aria-label="Jump to analysis tools">
             <a href="#themes"><strong>Themes</strong><span>Ranked codes & evidence</span></a>
             <a href="#discourse-explorer"><strong>Explorer</strong><span>All items & sentiment</span></a>
@@ -181,11 +219,11 @@
       <p class="provenance-banner is-sample" id="provenance-banner" aria-live="polite">
         <span class="provenance-badge" id="provenance-label">Sample corpus</span>
         <span class="provenance-detail" id="provenance-detail">
-          Offline curated sample in src/sample_reddit_corpus.py — paraphrased Reddit-style discourse for showcase runs.
+          Offline curated sample in src/sample_reddit_corpus.py: paraphrased Reddit-style discourse for showcase runs.
         </span>
         <span class="provenance-meta">
           Raw file: <a href="data/raw_reddit_posts.csv">data/raw_reddit_posts.csv</a>
-          · Collected <span id="provenance-collected">—</span>
+          · Collected <span id="provenance-collected">n/a</span>
         </span>
       </p>
 
@@ -194,6 +232,11 @@
           <p class="eyebrow">Focused coding output</p>
           <h2>Ranked discourse themes</h2>
           <p>Select a theme to inspect coded evidence, memo logic, and product implications.</p>
+        </div>
+
+        <div class="theme-chart-panel" id="dashboard-theme-viz-wrap">
+          <p class="theme-chart-panel__lede">Each square is one coded post or comment; the thin bar shows relative theme size. Click a row to open that theme.</p>
+          <div id="dashboard-theme-viz" class="theme-freq-chart" aria-label="Theme frequency isotype matrix"></div>
         </div>
 
         <div class="dashboard__grid">
@@ -231,7 +274,7 @@
                       </div>
                       <div>
                         <dt>Mean Reddit score</dt>
-                        <dd>Arithmetic mean of each row’s Reddit <strong>upvote score</strong> in this theme—not sentiment, not a composite index. Excerpt cards show the same per-post score.</dd>
+                        <dd>Arithmetic mean of each row’s Reddit <strong>upvote score</strong> in this theme, not sentiment and not a composite index. Excerpt cards show the same per-post score.</dd>
                       </div>
                       <div>
                         <dt>Dominant frame</dt>
@@ -253,7 +296,7 @@
                 <span id="detail-sentiment"></span>
                 <p>mean Reddit score</p>
               </article>
-              <article>
+              <article id="detail-frame-tile">
                 <span id="detail-frame"></span>
                 <p>dominant frame</p>
               </article>
@@ -262,6 +305,7 @@
             <div class="evidence-layout">
               <section>
                 <h3>Illustrative excerpts</h3>
+                <p class="evidence-note" id="evidence-note"></p>
                 <div id="evidence-list"></div>
               </section>
               <section class="memo-panel">
@@ -279,24 +323,24 @@
         <div class="section-heading">
           <p class="eyebrow">Plain analysis view</p>
           <h2>Discourse explorer</h2>
-          <p>Tabbed theme and sentiment readout — same layout as the MP2a Flask explorer, embedded in this showcase.</p>
+          <p>Tabbed theme and sentiment readout with the same layout as the MP2a Flask explorer, embedded in this showcase.</p>
         </div>
 
         <div class="explorer-stats" aria-label="Explorer summary">
           <article>
-            <span id="explorer-stat-items">—</span>
+            <span id="explorer-stat-items">…</span>
             <p>items analyzed</p>
           </article>
           <article>
-            <span id="explorer-stat-themes">—</span>
+            <span id="explorer-stat-themes">…</span>
             <p>themes found</p>
           </article>
           <article>
-            <span id="explorer-stat-sources">—</span>
+            <span id="explorer-stat-sources">…</span>
             <p>subreddits</p>
           </article>
           <article>
-            <span id="explorer-stat-sentiment">—</span>
+            <span id="explorer-stat-sentiment">…</span>
             <p>positive sentiment</p>
           </article>
         </div>
@@ -335,7 +379,7 @@
           <button type="button" class="download-card preview-card" data-preview="chart">
             <span>Chart</span>
             <strong>Top themes chart</strong>
-            <p>Interactive bar chart — click a bar to inspect that theme.</p>
+            <p>Interactive bar chart. Click a bar to inspect that theme.</p>
           </button>
           <a class="download-card preview-card preview-card--link" href="notebooks/legal_ai_discourse_analysis.ipynb" download>
             <span>IPYNB</span>
@@ -346,13 +390,14 @@
 
         <div class="method-note">
           <h3>Method stance</h3>
-          <p>Reddit-only scope. Keyword-assisted coding surfaces candidate themes; the researcher validates definitions, merges/splits codes, and interprets memos. Frequency ranks where to look first—it does not prove saturation or causality.</p>
+          <p>Reddit-only scope. Keyword-assisted coding surfaces candidate themes; the researcher validates definitions, merges/splits codes, and interprets memos. Frequency ranks where to look first. It does not prove saturation or causality.</p>
         </div>
       </section>
     </main>
 
     <footer>
       <p>HCDE 530 Mini Project 2. Public legal-tech discourse only; no private legal matters or client data are included.</p>
+      <p class="footer__copyright">Copyright reserved | Ranjitha Rangaswamy | 2026</p>
     </footer>
 
     <div class="preview-modal" id="preview-modal" hidden role="dialog" aria-modal="true" aria-labelledby="preview-modal-title">
@@ -372,6 +417,9 @@
     <script src="provenance.js"></script>
     <script src="showcase-data.js"></script>
     <script src="links.js"></script>
+    <script src="palette.js"></script>
+    <script src="theme-viz.js"></script>
+    <script src="theme-evidence.js"></script>
     <script src="app.js"></script>
     <script src="preview.js"></script>
     <script src="explorer.js"></script>

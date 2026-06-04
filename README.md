@@ -22,9 +22,13 @@ python run_pipeline.py
 Optional live Reddit collection (requires [Reddit API credentials](https://www.reddit.com/prefs/apps)):
 
 ```bash
-cp .env.template .env   # fill in credentials
+cp .env.template .env   # fill in credentials (or copy from week 9/.env)
 python run_pipeline.py --live-reddit
+# or
+python live_reddit_pipeline.py
 ```
+
+The live collector uses the week 9 PRAW script (`src/collect_reddit.py`): search across r/LawFirm, r/lawyers, r/LegalTech, r/artificial, and r/ChatGPT, plus hot-post sweeps on legal subs. It regenerates `showcase-data.js` and `provenance.js` for the static frontend in `index.html`.
 
 Open the analysis notebook:
 
@@ -34,7 +38,7 @@ jupyter notebook notebooks/legal_ai_discourse_analysis.ipynb
 
 Static showcase dashboard: open `index.html` in a browser, or use the **live demo**:
 
-**https://ranjitharangaswamy.github.io/DocketSignal/**
+**https://ranjitharangaswamy.com/DocketSignal/**
 
 ## Required artifacts
 
@@ -50,7 +54,7 @@ Static showcase dashboard: open `index.html` in a browser, or use the **live dem
 
 ## Pipeline steps
 
-1. **Collect** — PRAW (optional) or curated Reddit sample corpus
+1. **Collect** — PRAW live collector (week 9) or curated Reddit sample corpus
 2. **Clean** — lowercase, strip URLs/markup, dedupe short rows
 3. **Code themes** — keyword coding + TF-IDF cluster fallback
 4. **Summarize** — theme counts, percentages, mean Reddit score
@@ -69,10 +73,12 @@ Static showcase dashboard: open `index.html` in a browser, or use the **live dem
 ```
 DocketSignal/
   run_pipeline.py
+  live_reddit_pipeline.py   # refresh showcase from live Reddit API
   requirements.txt
   notebooks/legal_ai_discourse_analysis.ipynb
   src/
     pipeline.py
+    collect_reddit.py     # live PRAW collector (from week 9)
     sample_reddit_corpus.py
   data/
     raw_reddit_posts.csv

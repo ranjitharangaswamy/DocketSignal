@@ -3,7 +3,6 @@
 from __future__ import annotations
 
 import json
-import os
 import re
 from pathlib import Path
 
@@ -125,82 +124,27 @@ def load_sample_reddit() -> pd.DataFrame:
     return pd.DataFrame(rows)
 
 
-def try_collect_reddit_api() -> pd.DataFrame | None:
-    """Optional live collection via PRAW when credentials exist."""
+def try_collect_live_reddit() -> pd.DataFrame | None:
+    """Live collection via week 9 PRAW collector when credentials exist."""
     env_path = ROOT / ".env"
     if not env_path.exists():
         return None
 
     try:
-        import praw
-        from dotenv import load_dotenv
-    except ImportError:
+        from src.collect_reddit import collect as collect_live
+    except ImportError as exc:
+        print(f"Live Reddit collector unavailable: {exc}")
         return None
 
-    load_dotenv(env_path)
-    client_id = os.getenv("REDDIT_CLIENT_ID")
-    client_secret = os.getenv("REDDIT_CLIENT_SECRET")
-    if not client_id or not client_secret:
+    try:
+        df = collect_live()
+    except Exception as exc:
+        print(f"Live Reddit collection failed: {exc}")
         return None
 
-    reddit = praw.Reddit(
-        client_id=client_id,
-        client_secret=client_secret,
-        user_agent=os.getenv("REDDIT_USER_AGENT", "hcde530_mp2_showcase/1.0"),
-    )
-
-    subreddits = ["LawFirm", "lawyers", "LegalTech", "ChatGPT"]
-    queries = ["legal AI", "AI lawyer", "Harvey AI", "ChatGPT law", "AI ediscovery"]
-    rows = []
-    seen = set()
-
-    for sub_name in subreddits:
-        subreddit = reddit.subreddit(sub_name)
-        for query in queries:
-            for submission in subreddit.search(query, sort="relevance", time_filter="year", limit=15):
-                if submission.id in seen:
-                    continue
-                seen.add(submission.id)
-                rows.append(
-                    {
-                        "id": submission.id,
-                        "source": "reddit",
-                        "source_type": "post",
-                        "collected_at": COLLECTED_AT,
-                        "subreddit": sub_name,
-                        "title": submission.title,
-                        "body_text": submission.selftext or "",
-                        "author": str(submission.author) if submission.author else "",
-                        "score": submission.score,
-                        "num_comments": submission.num_comments,
-                        "created_date": pd.to_datetime(submission.created_utc, unit="s").strftime("%Y-%m-%d"),
-                        "source_url": f"https://www.reddit.com{submission.permalink}",
-                        "post_type": "post",
-                    }
-                )
-                submission.comments.replace_more(limit=0)
-                for idx, comment in enumerate(submission.comments[:5]):
-                    body = getattr(comment, "body", "")
-                    if len(body) < 40:
-                        continue
-                    rows.append(
-                        {
-                            "id": f"{submission.id}_c{idx}",
-                            "source": "reddit",
-                            "source_type": "comment",
-                            "collected_at": COLLECTED_AT,
-                            "subreddit": sub_name,
-                            "title": "",
-                            "body_text": body,
-                            "author": str(comment.author) if comment.author else "",
-                            "score": comment.score,
-                            "num_comments": 0,
-                            "created_date": pd.to_datetime(comment.created_utc, unit="s").strftime("%Y-%m-%d"),
-                            "source_url": f"https://www.reddit.com{submission.permalink}",
-                            "post_type": "comment",
-                        }
-                    )
-    return pd.DataFrame(rows) if rows else None
+    if df is None or len(df) == 0:
+        return None
+    return df
 
 
 def build_provenance(mode: str, label: str, detail: str, row_count: int, collected_at: str) -> dict:
@@ -216,16 +160,17 @@ def build_provenance(mode: str, label: str, detail: str, row_count: int, collect
 
 def collect_reddit(use_api: bool = True) -> tuple[pd.DataFrame, dict]:
     if use_api:
-        live = try_collect_reddit_api()
+        live = try_collect_live_reddit()
         if live is not None and len(live) >= 10:
-            print(f"Collected {len(live)} rows via Reddit API")
+            print(f"Collected {len(live)} rows via live Reddit API")
             collected_at = live["collected_at"].iloc[0] if "collected_at" in live.columns else COLLECTED_AT
             return live, build_provenance(
                 mode="live_reddit_api",
                 label="Live Reddit API",
                 detail=(
-                    "Collected via PRAW from r/LawFirm, r/lawyers, r/LegalTech, and r/ChatGPT. "
-                    "Each row links to a real Reddit permalink."
+                    "Collected via PRAW (week 9 collector) from r/LawFirm, r/lawyers, "
+                    "r/LegalTech, r/artificial, and r/ChatGPT using legal-AI search queries "
+                    "plus hot-post sweeps on legal subs. Each row links to a real Reddit permalink."
                 ),
                 row_count=len(live),
                 collected_at=str(collected_at),
@@ -240,7 +185,7 @@ def collect_reddit(use_api: bool = True) -> tuple[pd.DataFrame, dict]:
         mode="sample_corpus",
         label="Sample corpus",
         detail=(
-            "Offline curated sample in src/sample_reddit_corpus.py — paraphrased Reddit-style "
+            "Offline curated sample in src/sample_reddit_corpus.py: paraphrased Reddit-style "
             "discourse for showcase runs, not live thread scrapes. Source links open "
             "subreddit searches (not individual threads) because rows are illustrative."
             + fallback_note
@@ -366,18 +311,37 @@ def build_theme_summary(processed_df: pd.DataFrame) -> pd.DataFrame:
     return pd.DataFrame(rows).sort_values("count", ascending=False)
 
 
+def format_post_quote(row) -> tuple[str, str, str]:
+    """Return (title, body, display excerpt) using original Reddit fields when available."""
+    title = str(row.get("title", "") or "").strip()
+    body = str(row.get("body_text", "") or "").strip()
+    if title and body:
+        combined = f"{title}\n\n{body}"
+    elif body:
+        combined = body
+    elif title:
+        combined = title
+    else:
+        combined = str(row.get("clean_text", "") or "")
+    return title, body, combined
+
+
 def build_excerpts(processed_df: pd.DataFrame) -> pd.DataFrame:
     rows = []
     for theme in processed_df["primary_theme"].dropna().unique():
         subset = processed_df[processed_df["primary_theme"] == theme].copy()
         subset["score"] = pd.to_numeric(subset["score"], errors="coerce").fillna(0)
-        for rank, (_, row) in enumerate(subset.nlargest(3, "score").iterrows(), start=1):
+        for rank, (_, row) in enumerate(subset.nlargest(5, "score").iterrows(), start=1):
+            title, body, combined = format_post_quote(row)
             rows.append(
                 {
                     "theme": theme,
                     "theme_label": THEME_LABELS.get(theme, theme),
                     "rank": rank,
-                    "excerpt": str(row["clean_text"])[:400],
+                    "title": title,
+                    "body_text": body,
+                    "author": str(row.get("author", "") or ""),
+                    "excerpt": combined,
                     "subreddit": row["subreddit"],
                     "post_type": row["post_type"],
                     "score": row["score"],
@@ -392,7 +356,7 @@ def build_excerpts(processed_df: pd.DataFrame) -> pd.DataFrame:
 
 def build_memos(theme_summary: pd.DataFrame, excerpts: pd.DataFrame) -> str:
     lines = [
-        "# Legal AI Public Discourse — Researcher Memos",
+        "# Legal AI Public Discourse: Researcher Memos",
         "",
         POSITIONING,
         "",
@@ -418,7 +382,13 @@ def build_memos(theme_summary: pd.DataFrame, excerpts: pd.DataFrame) -> str:
             lines.append("**Illustrative excerpts:**")
             lines.append("")
             for _, ex in theme_excerpts.iterrows():
-                lines.append(f"- (r/{ex['subreddit']}, score {ex['score']}) \"{ex['excerpt'][:220]}...\"")
+                label = ex["title"] if str(ex.get("title", "")).strip() else str(ex["excerpt"])[:120]
+                lines.append(f'- (r/{ex["subreddit"]}, score {ex["score"]}) "{label}"')
+                if str(ex.get("body_text", "")).strip():
+                    body_preview = str(ex["body_text"]).strip()
+                    if len(body_preview) > 180:
+                        body_preview = body_preview[:177] + "..."
+                    lines.append(f'  > {body_preview}')
                 lines.append(f"  Source: {ex['source_url']}")
             lines.append("")
 
@@ -435,17 +405,30 @@ def build_memos(theme_summary: pd.DataFrame, excerpts: pd.DataFrame) -> str:
 
 
 def plot_top_themes(theme_summary: pd.DataFrame, output_path: Path) -> None:
+    theme_colors = {
+        "accuracy_trust": "#7b3f32",
+        "adoption_resistance": "#b59a6d",
+        "ethics_regulation": "#4a5d68",
+        "efficiency_gains": "#5a6b57",
+        "job_displacement": "#b8935a",
+        "tool_review": "#6b6256",
+        "ediscovery_review": "#354650",
+        "cost_value": "#9a5538",
+    }
     top = theme_summary.head(8).sort_values("count")
     labels = top["theme_label"].tolist()
     counts = top["count"].tolist()
+    colors = [theme_colors.get(theme, "#4a5d68") for theme in top["theme"]]
 
     fig, ax = plt.subplots(figsize=(9, 5))
-    bars = ax.barh(labels, counts, color="#1e3a5f")
+    fig.patch.set_facecolor("#fdf8f1")
+    ax.set_facecolor("#fffdf8")
+    bars = ax.barh(labels, counts, color=colors)
     ax.set_xlabel("Number of posts/comments")
     ax.set_title("Top themes in Reddit legal-AI discourse (frequency-ranked)")
     ax.bar_label(bars, padding=3)
     fig.tight_layout()
-    fig.savefig(output_path, dpi=150, bbox_inches="tight")
+    fig.savefig(output_path, dpi=150, bbox_inches="tight", facecolor=fig.get_facecolor())
     plt.close(fig)
 
 

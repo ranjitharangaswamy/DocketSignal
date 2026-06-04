@@ -25,11 +25,11 @@ function initExplorer() {
   const panel = root.querySelector("#explorer-panel");
   const stats = data.stats || {};
 
-  root.querySelector("#explorer-stat-items").textContent = stats.totalItems ?? "—";
-  root.querySelector("#explorer-stat-themes").textContent = stats.totalThemes ?? "—";
-  root.querySelector("#explorer-stat-sources").textContent = stats.uniqueSubreddits ?? "—";
+  root.querySelector("#explorer-stat-items").textContent = stats.totalItems ?? "…";
+  root.querySelector("#explorer-stat-themes").textContent = stats.totalThemes ?? "…";
+  root.querySelector("#explorer-stat-sources").textContent = stats.uniqueSubreddits ?? "…";
   root.querySelector("#explorer-stat-sentiment").textContent =
-    stats.sentimentPositivePct != null ? `${stats.sentimentPositivePct}%` : "—";
+    stats.sentimentPositivePct != null ? `${stats.sentimentPositivePct}%` : "…";
 
   tabs.innerHTML = Object.entries(EXPLORER_TABS)
     .map(
@@ -151,17 +151,25 @@ function renderExplorerSentiment(data, panel) {
   });
 
   panel.innerHTML = `
-    <p class="preview-lede">VADER polarity on cleaned Reddit text — a plain read on tone, not a substitute for qualitative interpretation.</p>
+    <p class="preview-lede">VADER polarity on cleaned Reddit text: a plain read on tone, not a substitute for qualitative interpretation.</p>
     <div class="explorer-sent-split">
       <div id="explorer-overall-sentiment" class="preview-chart preview-chart--square"></div>
       <div id="explorer-theme-sentiment" class="preview-chart"></div>
     </div>
     <div class="explorer-sent-legend">
-      <span><i class="dot dot-pos"></i>Positive — optimistic or approving tone</span>
-      <span><i class="dot dot-neu"></i>Neutral — descriptive or mixed</span>
-      <span><i class="dot dot-neg"></i>Negative — critical or warning tone</span>
+      <span><i class="dot dot-pos"></i>Positive: optimistic or approving tone</span>
+      <span><i class="dot dot-neu"></i>Neutral: descriptive or mixed</span>
+      <span><i class="dot dot-neg"></i>Negative: critical or warning tone</span>
     </div>
   `;
+
+  const sent = window.DOCKET_PALETTE?.sentiment || {
+    positive: "#5a6b57",
+    neutral: "#b59a6d",
+    negative: "#7b3f32",
+  };
+  const chartPaper = window.DOCKET_PALETTE?.paperStrong || "#fffdf8";
+  const chartInk = window.DOCKET_PALETTE?.ink || "#1a1612";
 
   Plotly.newPlot(
     "explorer-overall-sentiment",
@@ -169,14 +177,14 @@ function renderExplorerSentiment(data, panel) {
       type: "pie",
       labels: ["Positive", "Neutral", "Negative"],
       values: [counts.positive, counts.neutral, counts.negative],
-      marker: { colors: ["#4b7657", "#a9977e", "#7c2f2b"] },
+      marker: { colors: [sent.positive, sent.neutral, sent.negative] },
       hole: 0.42,
       textinfo: "label+percent",
     }],
     {
-      paper_bgcolor: "#fffaf1",
-      plot_bgcolor: "#fffaf1",
-      font: { family: "Source Sans 3, sans-serif", color: "#181512" },
+      paper_bgcolor: chartPaper,
+      plot_bgcolor: chartPaper,
+      font: { family: "Source Sans 3, sans-serif", color: chartInk },
       margin: { l: 10, r: 10, t: 30, b: 10 },
       height: 320,
       showlegend: false,
@@ -194,7 +202,7 @@ function renderExplorerSentiment(data, panel) {
         orientation: "h",
         y: sorted.map((t) => t.theme_label),
         x: sorted.map((t) => t.sentiment_positive_pct || 0),
-        marker: { color: "#4b7657" },
+        marker: { color: sent.positive },
       },
       {
         name: "Negative",
@@ -202,14 +210,14 @@ function renderExplorerSentiment(data, panel) {
         orientation: "h",
         y: sorted.map((t) => t.theme_label),
         x: sorted.map((t) => t.sentiment_negative_pct || 0),
-        marker: { color: "#7c2f2b" },
+        marker: { color: sent.negative },
       },
     ],
     {
       barmode: "stack",
-      paper_bgcolor: "#fffaf1",
-      plot_bgcolor: "#fffaf1",
-      font: { family: "Source Sans 3, sans-serif", color: "#181512" },
+      paper_bgcolor: chartPaper,
+      plot_bgcolor: chartPaper,
+      font: { family: "Source Sans 3, sans-serif", color: chartInk },
       margin: { l: 20, r: 20, t: 30, b: 20 },
       height: Math.max(320, sorted.length * 42),
       xaxis: { title: "Share of theme (%)", range: [0, 100] },

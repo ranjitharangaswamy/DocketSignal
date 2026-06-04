@@ -33,7 +33,7 @@ function prefersReducedMotion() {
 }
 
 function formatPct(value) {
-  return value == null ? "—" : `${Math.round(value)}%`;
+  return value == null ? "n/a" : `${Math.round(value)}%`;
 }
 
 function bindScrollyData() {

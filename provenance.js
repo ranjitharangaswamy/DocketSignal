@@ -2,8 +2,8 @@
 window.corpusProvenance = {
   "mode": "sample_corpus",
   "label": "Sample corpus",
-  "detail": "Offline curated sample in src/sample_reddit_corpus.py \u2014 paraphrased Reddit-style discourse for showcase runs, not live thread scrapes. Source links open subreddit searches (not individual threads) because rows are illustrative.",
-  "collected_at": "2026-06-03T23:16:23Z",
+  "detail": "Offline curated sample in src/sample_reddit_corpus.py: paraphrased Reddit-style discourse for showcase runs, not live thread scrapes. Source links open subreddit searches (not individual threads) because rows are illustrative.",
+  "collected_at": "2026-06-04T01:13:54Z",
   "row_count": 25,
   "raw_file": "data/raw_reddit_posts.csv",
   "date_range": "2023-2025",

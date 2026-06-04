@@ -6,7 +6,7 @@ const PREVIEW_META = {
   },
   processed_corpus: {
     title: "Processed corpus",
-    blurb: "Cleaned rows with theme codes — filter by subreddit or theme.",
+    blurb: "Cleaned rows with theme codes. Filter by subreddit or theme.",
     download: "data/processed_corpus.csv",
   },
   illustrative_excerpts: {
@@ -21,20 +21,25 @@ const PREVIEW_META = {
   },
   chart: {
     title: "Top themes chart",
-    blurb: "Interactive bar chart of theme frequency.",
+    blurb: "Unit tally chart: one dot per coded row. Click to open a theme.",
     download: "outputs/top_themes.png",
   },
 };
 
-const THEME_COLORS = {
-  accuracy_trust: "#7c2f2b",
-  adoption_resistance: "#a9977e",
-  ethics_regulation: "#28485f",
-  efficiency_gains: "#4b7657",
-  job_displacement: "#c28f37",
-  tool_review: "#665f56",
-  ediscovery_review: "#1e3a5f",
-  cost_value: "#8b5a2b",
+const THEME_COLORS = window.DOCKET_PALETTE?.themes || {
+  accuracy_trust: "#7b3f32",
+  adoption_resistance: "#b59a6d",
+  ethics_regulation: "#4a5d68",
+  efficiency_gains: "#5a6b57",
+  job_displacement: "#b8935a",
+  tool_review: "#6b6256",
+  ediscovery_review: "#354650",
+  cost_value: "#9a5538",
+};
+
+const CHART_UI = window.DOCKET_PALETTE || {
+  paperStrong: "#fffdf8",
+  ink: "#1a1612",
 };
 
 const modal = document.querySelector("#preview-modal");
@@ -57,9 +62,9 @@ function escapeHtml(text) {
 
 function plotLayout(title, extra = {}) {
   return {
-    paper_bgcolor: "#fffaf1",
-    plot_bgcolor: "#fffaf1",
-    font: { family: "Source Sans 3, sans-serif", color: "#181512", size: 13 },
+    paper_bgcolor: CHART_UI.paperStrong || "#fffdf8",
+    plot_bgcolor: CHART_UI.paperStrong || "#fffdf8",
+    font: { family: "Source Sans 3, sans-serif", color: CHART_UI.ink || "#1a1612", size: 13 },
     margin: { l: 20, r: 20, t: 44, b: 20 },
     title: { text: title, font: { family: "IBM Plex Serif, serif", size: 18 } },
     ...extra,
@@ -115,39 +120,18 @@ function jumpToTheme(themeId) {
 function renderThemeSummary(data, container) {
   const rows = [...data.themeSummary].sort((a, b) => b.count - a.count);
   container.innerHTML = `
-    <p class="preview-lede">Click a bar to jump to that theme in the main dashboard.</p>
-    <div id="preview-theme-chart" class="preview-chart"></div>
+    <p class="preview-lede">Isotype matrix: one square per coded row. Click a row to jump to that theme.</p>
+    <div id="preview-theme-chart" class="theme-freq-chart"></div>
     <div id="preview-score-chart" class="preview-chart preview-chart--short"></div>
   `;
 
   const labels = rows.map((r) => r.theme_label);
-  const counts = rows.map((r) => r.count);
-  const colors = rows.map((r) => THEME_COLORS[r.theme] || "#28485f");
+  const colors = rows.map((r) => THEME_COLORS[r.theme] || "#4a5d68");
 
-  Plotly.newPlot(
-    "preview-theme-chart",
-    [{
-      type: "bar",
-      orientation: "h",
-      y: labels,
-      x: counts,
-      marker: { color: colors },
-      text: rows.map((r) => `${r.percentage}%`),
-      textposition: "outside",
-      hovertemplate: "<b>%{y}</b><br>Count: %{x}<br>Share: %{text}<extra></extra>",
-      customdata: rows.map((r) => r.theme),
-    }],
-    plotLayout("Theme frequency (count)", {
-      xaxis: { title: "Posts / comments" },
-      yaxis: { automargin: true },
-      height: 360,
-    }),
-    { responsive: true, displayModeBar: false }
-  );
-
-  document.getElementById("preview-theme-chart").on("plotly_click", (event) => {
-    const themeId = event.points[0]?.customdata;
-    if (themeId) jumpToTheme(themeId);
+  renderThemeFrequencyChart("preview-theme-chart", rows, {
+    ascending: false,
+    title: "Theme frequency (isotype matrix)",
+    onThemeClick: jumpToTheme,
   });
 
   Plotly.newPlot(
@@ -190,15 +174,17 @@ function renderCorpusPreview(data, container) {
         </select>
       </label>
     </div>
-    <div class="preview-split">
-      <div id="preview-corpus-donut" class="preview-chart preview-chart--square"></div>
-      <div id="preview-corpus-table-wrap" class="preview-table-wrap"></div>
+    <div class="preview-corpus-viz">
+      <div id="preview-corpus-donut" class="preview-chart preview-chart--donut"></div>
+      <div id="preview-corpus-legend" class="preview-corpus-legend" aria-label="Theme legend"></div>
     </div>
+    <div id="preview-corpus-table-wrap" class="preview-table-wrap"></div>
   `;
 
   const themeFilter = container.querySelector("#corpus-theme-filter");
   const subFilter = container.querySelector("#corpus-sub-filter");
   const tableWrap = container.querySelector("#preview-corpus-table-wrap");
+  const legendEl = container.querySelector("#preview-corpus-legend");
 
   function filteredRows() {
     return rows.filter((row) => {
@@ -210,20 +196,48 @@ function renderCorpusPreview(data, container) {
 
   function renderDonut(subset) {
     const counts = {};
+    const labelToTheme = {};
     subset.forEach((row) => {
       counts[row.theme_label] = (counts[row.theme_label] || 0) + 1;
+      labelToTheme[row.theme_label] = row.primary_theme;
     });
+    const entries = Object.entries(counts).sort((a, b) => b[1] - a[1]);
+    const total = entries.reduce((sum, [, count]) => sum + count, 0);
+    const labels = entries.map(([label]) => label);
+    const values = entries.map(([, count]) => count);
+    const colors = labels.map((label) => THEME_COLORS[labelToTheme[label]] || "#4a5d68");
+
+    if (legendEl) {
+      legendEl.innerHTML = entries
+        .map(([label, count]) => {
+          const pct = total ? Math.round((count / total) * 100) : 0;
+          const color = THEME_COLORS[labelToTheme[label]] || "#4a5d68";
+          return `
+            <div class="corpus-legend-item">
+              <span class="corpus-legend-swatch" style="background:${color}"></span>
+              <span class="corpus-legend-text">${escapeHtml(label)}</span>
+              <span class="corpus-legend-pct">${pct}%</span>
+            </div>`;
+        })
+        .join("");
+    }
+
     Plotly.newPlot(
       "preview-corpus-donut",
       [{
         type: "pie",
-        labels: Object.keys(counts),
-        values: Object.values(counts),
-        hole: 0.45,
-        textinfo: "label+percent",
+        labels,
+        values,
+        hole: 0.48,
+        textinfo: "none",
+        marker: { colors, line: { color: CHART_UI.paperStrong || "#fffdf8", width: 2 } },
         hovertemplate: "<b>%{label}</b><br>%{value} rows (%{percent})<extra></extra>",
       }],
-      plotLayout("Theme mix", { height: 320, showlegend: false }),
+      plotLayout("Theme mix", {
+        height: 280,
+        showlegend: false,
+        margin: { l: 12, r: 12, t: 44, b: 12 },
+      }),
       { responsive: true, displayModeBar: false }
     );
   }
@@ -243,7 +257,7 @@ function renderCorpusPreview(data, container) {
         <tbody>
           ${subset.map((row) => `
             <tr data-theme="${row.primary_theme}">
-              <td><span class="theme-chip" style="--chip:${THEME_COLORS[row.primary_theme] || "#28485f"}">${escapeHtml(row.theme_label)}</span></td>
+              <td><span class="theme-chip" style="--chip:${THEME_COLORS[row.primary_theme] || "#4a5d68"}">${escapeHtml(row.theme_label)}</span></td>
               <td>r/${escapeHtml(row.subreddit)}</td>
               <td>${escapeHtml(row.post_type)}</td>
               <td>${row.score}</td>
@@ -298,8 +312,16 @@ function renderExcerptsPreview(data, container) {
           <strong>${escapeHtml(row.theme_label)}</strong>
           <span>r/${escapeHtml(row.subreddit)} · score ${row.score}</span>
         </div>
-        <div class="preview-score-bar" style="--w:${Math.round((row.score / maxScore) * 100)}%; --c:${THEME_COLORS[row.theme] || "#28485f"}"></div>
-        <p>${escapeHtml(row.excerpt)}…</p>
+        <div class="preview-score-bar" style="--w:${Math.round((row.score / maxScore) * 100)}%; --c:${THEME_COLORS[row.theme] || "#4a5d68"}"></div>
+        ${redditQuoteHtml({
+          title: row.title,
+          body_text: row.body_text,
+          author: row.author,
+          post_type: row.post_type,
+          subreddit: row.subreddit,
+          score: row.score,
+          excerpt: row.excerpt,
+        })}
         <button type="button" class="preview-link-btn" data-theme="${row.theme}">Inspect in dashboard</button>
         <a href="${link.href}" target="_blank" rel="noreferrer">${link.label}</a>
       </article>
@@ -337,31 +359,14 @@ function renderMemosPreview(data, container) {
 
 function renderChartPreview(data, container) {
   container.innerHTML = `
-    <p class="preview-lede">Same frequency data as the static PNG, rendered interactively. Hover for counts; click a bar to open that theme.</p>
-    <div id="preview-main-chart" class="preview-chart"></div>
+    <p class="preview-lede">Isotype matrix: each square is one coded post. Click a row to explore that theme.</p>
+    <div id="preview-main-chart" class="theme-freq-chart"></div>
   `;
-  const rows = [...data.themeSummary].sort((a, b) => a.count - b.count);
-  Plotly.newPlot(
-    "preview-main-chart",
-    [{
-      type: "bar",
-      orientation: "h",
-      y: rows.map((r) => r.theme_label),
-      x: rows.map((r) => r.count),
-      marker: { color: rows.map((r) => THEME_COLORS[r.theme] || "#28485f") },
-      customdata: rows.map((r) => r.theme),
-      hovertemplate: "<b>%{y}</b><br>%{x} items<extra></extra>",
-    }],
-    plotLayout("Top themes in Reddit legal-AI discourse", {
-      xaxis: { title: "Number of posts/comments" },
-      yaxis: { automargin: true },
-      height: 400,
-    }),
-    { responsive: true, displayModeBar: false }
-  );
-  document.getElementById("preview-main-chart").on("plotly_click", (event) => {
-    const themeId = event.points[0]?.customdata;
-    if (themeId) jumpToTheme(themeId);
+  const rows = [...data.themeSummary];
+  renderThemeFrequencyChart("preview-main-chart", rows, {
+    ascending: true,
+    title: "Top themes in Reddit legal-AI discourse",
+    onThemeClick: jumpToTheme,
   });
 }
 
