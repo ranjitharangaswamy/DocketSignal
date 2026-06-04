@@ -38,7 +38,7 @@ jupyter notebook notebooks/legal_ai_discourse_analysis.ipynb
 
 Static showcase dashboard: open `index.html` in a browser, or use the **live demo**:
 
-**https://ranjitharangaswamy.com/DocketSignal/**
+**https://ranjitharangaswamy.github.io/DocketSignal/**
 
 ## Required artifacts
 
