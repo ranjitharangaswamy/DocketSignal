@@ -1,0 +1,123 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="Competency claims for DocketSignal, including legal reasoning, UX research, ethical data collection, and computational pipeline work.">
+    <title>Competencies | DocketSignal</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Serif:wght@500;600&family=Source+Sans+3:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css?v=20260609">
+  </head>
+  <body class="design-page">
+    <header class="design-page__header">
+      <nav class="design-page__nav" aria-label="Competency navigation">
+        <a class="design-page__brand" href="index.html">DocketSignal</a>
+        <div class="design-page__nav-links">
+          <a href="index.html#story">Story</a>
+          <a href="index.html#themes">Themes</a>
+          <a href="index.html#evidence">Evidence</a>
+          <a href="design.html">Design thinking</a>
+          <a href="competencies.html" aria-current="page" class="design-page__nav-current">Competencies</a>
+          <a href="reflection.html">Reflection</a>
+        </div>
+      </nav>
+      <div class="design-page__intro">
+        <p class="eyebrow">Portfolio · HCDE 530 · Mini Project 2</p>
+        <h1>Competency claims</h1>
+        <p class="design-page__lede">
+          These claims explain what DocketSignal demonstrates as a computational research artifact, a public-data project, and a bridge between legal reasoning and UX research.
+        </p>
+        <div class="design-page__actions">
+          <a class="button button--primary design-page__btn" href="index.html">Open the showcase</a>
+          <a class="button button--secondary design-page__btn" href="mp2.md">Read markdown version</a>
+        </div>
+      </div>
+    </header>
+
+    <main class="design-page__main">
+      <section class="design-themes" aria-labelledby="competency-map">
+        <div class="section-heading">
+          <p class="eyebrow">MP2 claims</p>
+          <h2 id="competency-map">What this project demonstrates</h2>
+          <p>Each claim connects the project work to a specific part of the code, interface, or analysis.</p>
+        </div>
+
+        <ol class="design-theme-grid">
+          <li class="design-theme-card">
+            <span class="design-theme-card__index">01</span>
+            <div class="design-theme-card__body">
+              <h3>Computational research pipeline</h3>
+              <p class="design-theme-card__layout">Collection to structured artifacts</p>
+              <p><code>src/pipeline.py</code> moves data through collection, cleaning, deduplication, theme coding, summary generation, excerpt selection, memo writing, chart creation, and static dashboard export.</p>
+            </div>
+          </li>
+
+          <li class="design-theme-card">
+            <span class="design-theme-card__index">02</span>
+            <div class="design-theme-card__body">
+              <h3>Ethical public-data scope</h3>
+              <p class="design-theme-card__layout">Reddit API, provenance, and boundaries</p>
+              <p>The project limits collection to public Reddit posts and comments through PRAW, avoids private forums and client data, and keeps source scope visible in the README and provenance notes.</p>
+            </div>
+          </li>
+
+          <li class="design-theme-card">
+            <span class="design-theme-card__index">03</span>
+            <div class="design-theme-card__body">
+              <h3>Qualitative interpretation support</h3>
+              <p class="design-theme-card__layout">Transparent coding plus researcher memos</p>
+              <p>The keyword themes, TF-IDF fallback, sentiment tags, excerpt tables, and memos support early analysis while keeping human interpretation central.</p>
+            </div>
+          </li>
+
+          <li class="design-theme-card">
+            <span class="design-theme-card__index">04</span>
+            <div class="design-theme-card__body">
+              <h3>Public-facing research communication</h3>
+              <p class="design-theme-card__layout">Dashboard, evidence panels, and source links</p>
+              <p>The interface turns CSV outputs into a readable showcase with a story, provenance, ranked themes, evidence, memos, chart views, and data exploration.</p>
+            </div>
+          </li>
+
+          <li class="design-theme-card">
+            <span class="design-theme-card__index">05</span>
+            <div class="design-theme-card__body">
+              <h3>Runnable project packaging</h3>
+              <p class="design-theme-card__layout">Notebook, scripts, data, and documentation</p>
+              <p>The project includes setup instructions, public URLs, a notebook, generated outputs, <code>.env.template</code>, <code>requirements.txt</code>, <code>mp2.md</code>, and <code>reflection.md</code>.</p>
+            </div>
+          </li>
+
+          <li class="design-theme-card">
+            <span class="design-theme-card__index">06</span>
+            <div class="design-theme-card__body">
+              <h3>Law plus UX research</h3>
+              <p class="design-theme-card__layout">Cross-disciplinary framing</p>
+              <p>DocketSignal connects legal concerns like citations, confidentiality, billing, sanctions risk, and governance with UX research habits like coding, synthesis, evidence panels, and stakeholder-readable product implications.</p>
+            </div>
+          </li>
+        </ol>
+      </section>
+
+      <section class="design-story design-story--alt" aria-labelledby="competency-cross-discipline">
+        <div class="design-story__inner">
+          <p class="design-story__kicker">Cross-discipline claim</p>
+          <h2 id="competency-cross-discipline">Legal reasoning shapes the UX research question</h2>
+          <p>
+            DocketSignal frames public legal-AI discourse as user research for legal-tech product decisions. The legal side helps identify what matters: citation trust, confidentiality, professional responsibility, billing incentives, sanctions risk, and governance inside firms. The UX side turns that discourse into coded patterns, evidence panels, memos, and product implications that a stakeholder can inspect.
+          </p>
+          <p>
+            This is where the project fits my background. Legal training pushes me to ask what supports a claim. UX research pushes me to ask who needs the claim, what decision it informs, and how quickly someone can check the evidence. DocketSignal is built around that overlap.
+          </p>
+        </div>
+      </section>
+    </main>
+
+    <footer>
+      <p>HCDE 530 Mini Project 2 · Competency documentation for portfolio review.</p>
+      <p class="footer__copyright">Copyright reserved | Ranjitha Rangaswamy | 2026</p>
+    </footer>
+  </body>
+</html>

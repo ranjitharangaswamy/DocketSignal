@@ -1,0 +1,104 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="Reflection for DocketSignal — what was built, design decisions, future improvements, and competency claims.">
+    <title>Reflection | DocketSignal</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Serif:wght@500;600&family=Source+Sans+3:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css?v=20260609">
+  </head>
+  <body class="design-page">
+    <header class="design-page__header">
+      <nav class="design-page__nav" aria-label="Reflection navigation">
+        <a class="design-page__brand" href="index.html">DocketSignal</a>
+        <div class="design-page__nav-links">
+          <a href="index.html#story">Story</a>
+          <a href="index.html#themes">Themes</a>
+          <a href="index.html#evidence">Evidence</a>
+          <a href="design.html">Design thinking</a>
+          <a href="competencies.html">Competencies</a>
+          <a href="reflection.html" aria-current="page" class="design-page__nav-current">Reflection</a>
+        </div>
+      </nav>
+      <div class="design-page__intro">
+        <p class="eyebrow">Portfolio · HCDE 530 · Mini Project 2</p>
+        <h1>Reflection</h1>
+        <p class="design-page__lede">
+          A professional account of what DocketSignal does, why it was scoped this way, how the design decisions support qualitative analysis, and what the project demonstrates.
+        </p>
+        <div class="design-page__actions">
+          <a class="button button--primary design-page__btn" href="index.html">Open the showcase</a>
+          <a class="button button--secondary design-page__btn" href="reflection.md">Read markdown version</a>
+        </div>
+      </div>
+    </header>
+
+    <main class="design-page__main">
+      <section class="design-story" aria-labelledby="reflection-built">
+        <div class="design-story__inner">
+          <p class="design-story__kicker">01 · What I built</p>
+          <h2 id="reflection-built">A public discourse research pipeline and static showcase</h2>
+          <p>
+            I built DocketSignal, a small research pipeline and static dashboard for analyzing public Reddit discourse about legal AI. The tool collects or loads posts and comments about legal AI, cleans the text, assigns early qualitative themes, adds sentiment and rhetorical-frame signals, and turns the results into CSV files, researcher memos, a chart, and a public-facing dashboard. It is designed for legal-tech researchers, UX researchers, and product collaborators who want to understand what practitioners publicly argue about: hallucinated citations, trust, billing pressure, adoption resistance, governance, workflow gains, and tool choice.
+          </p>
+          <p>
+            The final artifact has two layers. The Python layer creates structured qualitative artifacts from public text. The showcase layer explains those artifacts through a portfolio-style interface. I also built a design thinking page that documents why the evidence panel does not use one generic card layout for every theme. Instead, it treats each theme as a different discourse type: accuracy appears as citation-like warning blocks, adoption resistance as a sticky-note culture map, ethics as policy memo language, workflow gains as handoff steps, role anxiety as persona-oriented evidence, vendor comparison as a split product/thread view, eDiscovery as affect plus evidence, and cost as invoice or ledger logic.
+          </p>
+        </div>
+      </section>
+
+      <section class="design-story design-story--alt" aria-labelledby="reflection-decisions">
+        <div class="design-story__inner">
+          <p class="design-story__kicker">02 · Decisions</p>
+          <h2 id="reflection-decisions">Reddit-only data, transparent coding, and theme-specific visual forms</h2>
+          <p>
+            I chose a Cursor + Python project because the core work is data collection, cleaning, and analysis rather than a production web app. I kept Reddit as the live data source because it has public practitioner-facing discussion and can be accessed through an official API with PRAW. I dropped broader web and LinkedIn scraping from the final scope because those sources raise more terms-of-service and provenance issues, and they would have made the project less reliable for a class deliverable.
+          </p>
+          <p>
+            The biggest design decision was to separate ranking from interpretation. A frequency chart is useful for answering where discourse concentrates, but it cannot express what different arguments feel like to read. The design thinking page makes this claim directly: one chart cannot carry eight different arguments. I chose to match metaphor to discourse type rather than theme label alone. That is why the dashboard keeps a consistent legal research palette, provenance fields, and source links while allowing the evidence layouts to vary.
+          </p>
+        </div>
+      </section>
+
+      <section class="design-story" aria-labelledby="reflection-different">
+        <div class="design-story__inner">
+          <p class="design-story__kicker">03 · What I would do differently</p>
+          <h2 id="reflection-different">Add validation loops and test the metaphor system</h2>
+          <p>
+            I would improve the qualitative coding layer by adding a human validation loop directly into the tool. Right now the themes are transparent and inspectable, but the researcher still has to validate them outside the interface. A stronger version would let the researcher accept, reject, rename, or merge codes in the dashboard and then export a revised codebook.
+          </p>
+          <p>
+            On the design side, I would user-test the metaphor system. The design thinking page argues that eight themes need eight visual languages, but that is still a design hypothesis. I would test whether legal researchers actually remember theme definitions better when evidence panels have distinct forms, or whether some users prefer a uniform card system for speed. I would also add a simple mode toggle: one mode for portfolio storytelling and one mode for dense research review.
+          </p>
+        </div>
+      </section>
+
+      <section class="design-story design-story--alt" aria-labelledby="reflection-demonstrates">
+        <div class="design-story__inner">
+          <p class="design-story__kicker">04 · Competency demonstration</p>
+          <h2 id="reflection-demonstrates">Computational fluency, data ethics, qualitative judgment, and design rationale</h2>
+          <p>
+            This project demonstrates computational fluency, data ethics, qualitative research judgment, and communication design. The computational work appears in <code>src/pipeline.py</code>, <code>src/collect_reddit.py</code>, and <code>src/qualitative.py</code>, which collect, clean, code, summarize, and export the corpus. The ethical scope is visible in the Reddit-only collection strategy, <code>.env.template</code>, provenance notes, and repeated disclaimer that the tool supports analysis rather than replacing interpretation.
+          </p>
+          <p>
+            The design thinking page adds a more specific interface-design claim: visualization should respect the substance of each code, not only its count. The project demonstrates that claim through the theme evidence system in <code>theme-evidence.js</code>, the design documentation in <code>design.html</code>, and the shared styling in <code>styles.css</code>. The interface keeps consistent provenance, subreddit, score, and source-link details while changing the visual metaphor for different discourse patterns.
+          </p>
+        </div>
+      </section>
+
+      <section class="design-cta">
+        <h2>Continue reviewing the project</h2>
+        <p>The reflection pairs with the design-thinking notes and the live evidence panels.</p>
+        <a class="button button--primary design-page__btn" href="design.html">Open design thinking</a>
+      </section>
+    </main>
+
+    <footer>
+      <p>HCDE 530 Mini Project 2 · Reflection documentation for portfolio review.</p>
+      <p class="footer__copyright">Copyright reserved | Ranjitha Rangaswamy | 2026</p>
+    </footer>
+  </body>
+</html>

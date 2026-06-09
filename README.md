@@ -1,14 +1,56 @@
 # DocketSignal — Legal AI Public Discourse Analyzer
 
-**Repository:** [github.com/ranjitharangaswamy/DocketSignal](https://github.com/ranjitharangaswamy/DocketSignal)
+DocketSignal is a small research tool for reading public Reddit discourse about legal AI. It collects or loads Reddit posts and comments, cleans the text, assigns early qualitative themes, calculates frequency and sentiment signals, extracts illustrative excerpts, writes researcher memos, and publishes the results into a static showcase dashboard.
 
-**HCDE 530 — Mini Project 2 (Research Track)**
+The tool is for UX researchers, legal-tech product teams, and HCDE collaborators who want a quick way to see what practitioners publicly argue about when legal AI comes up: hallucinated citations, trust, adoption resistance, workflow gains, billing pressure, governance, and tool comparisons. It is not a legal advice system and it does not replace human qualitative interpretation.
 
-Reddit-only qualitative analysis pipeline for early-stage legal AI discourse research.
+## Public URLs
 
-> This tool does not automate grounded theory. It supports early-stage qualitative analysis by surfacing recurring themes, frequency signals, illustrative excerpts, and short researcher memos. The human researcher still interprets and validates the findings.
+- Live dashboard: https://ranjitharangaswamy.com/DocketSignal/
+- GitHub Pages fallback: https://ranjitharangaswamy.github.io/DocketSignal/
+- Published notebook: https://github.com/ranjitharangaswamy/DocketSignal/blob/main/notebooks/legal_ai_discourse_analysis.ipynb
+- Code repository: https://github.com/ranjitharangaswamy/DocketSignal
 
-## Quick start
+Note: GitHub Pages paths are case-sensitive. The working deployed path is `/DocketSignal/`, not lowercase `/docketsignal/`.
+
+## Preview directions
+
+Use one of these options to preview the project:
+
+1. **Public dashboard preview:** open https://ranjitharangaswamy.com/DocketSignal/.
+2. **Notebook preview:** open the published notebook on GitHub at https://github.com/ranjitharangaswamy/DocketSignal/blob/main/notebooks/legal_ai_discourse_analysis.ipynb. GitHub renders the notebook without a server.
+3. **Local static preview from this repo:**
+
+```bash
+cd MiniProject2
+python3 -m http.server 8000
+```
+
+Then open:
+
+```text
+http://localhost:8000/
+```
+
+You can also open `MiniProject2/index.html` directly in a browser, but a local server is better for checking relative links and GitHub Pages-style behavior.
+
+## Source of truth for final submission
+
+This `hcde530/MiniProject2` folder is the most recent final-submission version. It includes the dashboard code, Python pipeline, notebook, data outputs, competency claims in `mp2.md`, and expanded reflection in `reflection.md`. The separate `ranjitharangaswamy/DocketSignal` GitHub repository is the deployed showcase/code mirror, but it may lag behind this folder until changes are pushed there.
+
+## What the tool does
+
+1. Collects public Reddit discourse with PRAW when Reddit API credentials are available.
+2. Falls back to a curated sample corpus so the project runs without secrets.
+3. Cleans and deduplicates text rows.
+4. Codes themes with transparent keyword rules and a TF-IDF clustering fallback for uncoded text.
+5. Adds lightweight sentiment, emotion, and rhetorical-frame tags.
+6. Exports CSV artifacts, memos, a chart, and static JavaScript data for the dashboard.
+7. Displays the results in `index.html` as a public-facing research showcase.
+
+This tool supports early-stage qualitative analysis. It surfaces patterns for a researcher to inspect; it does not automate grounded theory or claim that frequency is the same as importance.
+
+## How to run locally
 
 ```bash
 git clone https://github.com/ranjitharangaswamy/DocketSignal.git
@@ -19,84 +61,69 @@ pip install -r requirements.txt
 python run_pipeline.py
 ```
 
-Optional live Reddit collection (requires [Reddit API credentials](https://www.reddit.com/prefs/apps)):
+Then open `index.html` in a browser. The command above uses the sample corpus and regenerates:
+
+- `data/raw_reddit_posts.csv`
+- `data/processed_corpus.csv`
+- `data/qualitative_corpus.csv`
+- `outputs/theme_summary.csv`
+- `outputs/illustrative_excerpts.csv`
+- `outputs/memos.md`
+- `outputs/top_themes.png`
+- `showcase-data.js`
+- `provenance.js`
+
+## Optional live Reddit collection
+
+Live Reddit collection requires a free Reddit script app and local credentials. Create `MiniProject2/.env` or `.env` in the repository root using `.env.template`:
 
 ```bash
-cp .env.template .env   # fill in credentials (or copy from week 9/.env)
+REDDIT_CLIENT_ID=your_client_id
+REDDIT_CLIENT_SECRET=your_client_secret
+REDDIT_USER_AGENT=hcde530_mp2_showcase/1.0
+REDDIT_SEARCH_LIMIT=50
+REDDIT_HOT_LIMIT=100
+```
+
+Then run:
+
+```bash
 python run_pipeline.py --live-reddit
-# or
+```
+
+or:
+
+```bash
 python live_reddit_pipeline.py
 ```
 
-The live collector uses the week 9 PRAW script (`src/collect_reddit.py`): search across r/LawFirm, r/lawyers, r/LegalTech, r/artificial, and r/ChatGPT, plus hot-post sweeps on legal subs. It regenerates `showcase-data.js` and `provenance.js` for the static frontend in `index.html`.
+The live collector searches r/LawFirm, r/lawyers, r/LegalTech, r/artificial, and r/ChatGPT for legal-AI queries, plus hot-post sweeps on legal subreddits. If credentials are missing or the API returns too few rows, the project falls back to the sample corpus so the dashboard still works.
 
-Open the analysis notebook:
+## Project files
 
-```bash
-jupyter notebook notebooks/legal_ai_discourse_analysis.ipynb
-```
-
-Static showcase dashboard: open `index.html` in a browser, or use the **live demo**:
-
-**https://ranjitharangaswamy.github.io/DocketSignal/**
-
-## Required artifacts
-
-| Path | Description |
-|------|-------------|
-| `data/raw_reddit_posts.csv` | Raw Reddit posts/comments |
-| `data/processed_corpus.csv` | Cleaned, theme-coded corpus |
-| `outputs/theme_summary.csv` | Frequency-ranked themes |
-| `outputs/illustrative_excerpts.csv` | Top excerpts per theme |
-| `outputs/memos.md` | Short researcher memos |
-| `outputs/top_themes.png` | Bar chart of top themes |
-| `notebooks/legal_ai_discourse_analysis.ipynb` | Runnable analysis notebook |
-
-## Pipeline steps
-
-1. **Collect** — PRAW live collector (week 9) or curated Reddit sample corpus
-2. **Clean** — lowercase, strip URLs/markup, dedupe short rows
-3. **Code themes** — keyword coding + TF-IDF cluster fallback
-4. **Summarize** — theme counts, percentages, mean Reddit score
-5. **Excerpt** — highest-scored posts per theme
-6. **Memo** — researcher notes with positioning disclaimer
-7. **Chart** — horizontal bar chart of theme frequency
-
-## Scope
-
-**In scope:** Reddit public discourse, text cleaning, theme coding, frequency ranking, excerpts, memos, CSV outputs, one chart.
-
-**Out of scope:** LinkedIn scraping, blog scraping, Teachable Machine, deposition prep tooling, production frontend.
-
-## Project layout
-
-```
-DocketSignal/
-  run_pipeline.py
-  live_reddit_pipeline.py   # refresh showcase from live Reddit API
-  requirements.txt
-  notebooks/legal_ai_discourse_analysis.ipynb
-  src/
-    pipeline.py
-    collect_reddit.py     # live PRAW collector (from week 9)
-    sample_reddit_corpus.py
-  data/
-    raw_reddit_posts.csv
-    processed_corpus.csv
-  outputs/
-    theme_summary.csv
-    illustrative_excerpts.csv
-    memos.md
-    top_themes.png
-  index.html          # optional static showcase
-  app.js
-  styles.css
-```
+| Path | Purpose |
+| --- | --- |
+| `index.html`, `styles.css`, `app.js` | Static dashboard interface |
+| `showcase-data.js`, `provenance.js` | Generated data consumed by the dashboard |
+| `run_pipeline.py` | Main sample/live pipeline entry point |
+| `live_reddit_pipeline.py` | Convenience entry point for live Reddit refresh |
+| `src/collect_reddit.py` | PRAW collector |
+| `src/pipeline.py` | Cleaning, coding, summary, memo, chart, and export logic |
+| `src/qualitative.py` | Sentiment, emotion, and rhetorical-frame tagging |
+| `src/sample_reddit_corpus.py` | Offline sample corpus |
+| `notebooks/legal_ai_discourse_analysis.ipynb` | Published analysis notebook |
+| `data/` | Raw and processed CSV outputs |
+| `outputs/` | Theme summaries, excerpts, memos, and chart |
+| `mp2.md` | Competency claims |
+| `competencies.html` | Browser-readable competency claims linked from the top nav |
+| `reflection.md` | 500-word project reflection |
+| `reflection.html` | Browser-readable reflection page linked from the top nav |
 
 ## Verification
 
-After `python run_pipeline.py`:
+After `python run_pipeline.py`, confirm:
 
-1. Confirm `data/raw_reddit_posts.csv` has 25 rows (sample mode).
-2. Confirm `outputs/theme_summary.csv` lists 8 themes; top theme ~20% share.
-3. Open `outputs/top_themes.png` and skim `outputs/memos.md` for excerpt traceability.
+1. `data/raw_reddit_posts.csv` exists and has rows.
+2. `outputs/theme_summary.csv` lists ranked themes.
+3. `outputs/memos.md` includes theme-level researcher memos.
+4. `index.html` opens and shows DocketSignal with theme rankings, evidence, explorer, and downloads.
